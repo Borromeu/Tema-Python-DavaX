@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
-import math
 from database.connectionDB import get_db_connection, save_operation
 from functions.fibonacci import fibonacci
+from functions.factorial import factorial
+from functions.pow import pow
 from model.fibonacci_input_model import FibonacciInput
 from model.factorial_input_model import FactorialInput
 from model.power_input_model import PowerInput
@@ -31,21 +32,21 @@ def post_fibonacci(data: FibonacciInput):
 def post_factorial(data: FactorialInput):
   try:
       result = factorial(data.n)
-      save_operation("fibonacci", f"n={data.n}", str(result))
+      save_operation("factorial", f"n={data.n}", str(result))
       return {
           "operation": "factorial",
           "n": data.n,
           "result": result
       }
-      except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+  except ValueError as e:
+      raise HTTPException(status_code=400, detail=str(e))
 
 
 #Post method for inserting and saving a power operation in database
 @router.post("/pow")
 def post_power(data: PowerInput):
     try:
-        result = math.pow(data.base, data.exp)
+        result = pow(data.base, data.exp)
         save_operation("pow", f"{data.base}^{data.exp}", str(result))
         return {
             "operation": "pow",
@@ -60,7 +61,7 @@ def post_power(data: PowerInput):
 # This method will get and display the rows that used the pow operation
 @router.get("/pow")
 def compute_power(base: float = Query(...), exp: float = Query(...)):
-    result = math.pow(base, exp)
+    result = pow(base, exp)
     save_operation("pow", f"{base}^{exp}", str(result))
     return {"operation": "pow", "base": base, "exp": exp, "result": result}
 
@@ -82,7 +83,7 @@ def compute_fibonacci(n: int = Query(..., ge=0)):
 @router.get("/factorial")
 def compute_factorial(n: int = Query(..., ge=0)):
     try:
-        result = math.factorial(n)
+        result = factorial(n)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     save_operation("factorial", f"n={n}", str(result))
@@ -90,7 +91,7 @@ def compute_factorial(n: int = Query(..., ge=0)):
 
 
 
-# This method is used to display an historian of all operations that have been
+# This method is used to display a historian of all operations that have been
 # executed and saved
 @router.get("/history")
 def get_history():
