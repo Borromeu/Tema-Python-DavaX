@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Query
-import math
 from database.connectionDB import get_db_connection, save_operation
 from functions.fibonacci import fibonacci
 from functions.factorial import factorial
@@ -62,7 +61,7 @@ def post_power(data: PowerInput):
 # This method will get and display the rows that used the pow operation
 @router.get("/pow")
 def compute_power(base: float = Query(...), exp: float = Query(...)):
-    result = math.pow(base, exp)
+    result = pow(base, exp)
     save_operation("pow", f"{base}^{exp}", str(result))
     return {"operation": "pow", "base": base, "exp": exp, "result": result}
 
@@ -84,7 +83,7 @@ def compute_fibonacci(n: int = Query(..., ge=0)):
 @router.get("/factorial")
 def compute_factorial(n: int = Query(..., ge=0)):
     try:
-        result = math.factorial(n)
+        result = factorial(n)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     save_operation("factorial", f"n={n}", str(result))
