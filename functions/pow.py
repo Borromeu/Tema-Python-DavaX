@@ -6,8 +6,8 @@ from functions.factorial import factorial
 
 
 def pow(base: float, exp: float, n_terms: int = 100) -> float:
-    if base <= 0:
-        raise ValueError("Base must be positive for logarithmic exponentiation.")
+    if base <= 0 or exp <= 0:
+        raise ValueError("Base and exponent must be positive for logarithmic exponentiation.")
 
     x = exp * log_pure(base)  # b * ln(a)
 
