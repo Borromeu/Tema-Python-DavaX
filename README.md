@@ -96,18 +96,18 @@ Să genereze o bază de date SQLite care salvează datele operațiilor efectuate
 #### 🔁 Pasul 3.5 – Executarea metodelor rutelor
 Folosim APIRouter() pentru definirea rutelor GET și POST:
 
-POST – inserare și salvare date
+- POST – inserare și salvare date
 
-GET – verificare existență date
+- GET – verificare existență date
 
-##### Scopul:
+#### Scopul:
 Să putem accesa:
 
-istoricul tuturor operațiilor;
+- istoricul tuturor operațiilor;
 
-istoricul filtrat per operație;
+- istoricul filtrat per operație;
 
-o linie specifică de date în funcție de valorile introduse.
+- o linie specifică de date în funcție de valorile introduse.
 
 
 
