@@ -46,13 +46,13 @@ Pentru inceput, user-ul va crea un environment separat (venv) astfel incat acest
 
 Dupa care, pentru ca programul să funcționeze cum trebuie, vom instala următoarele pachete:
 
-fastapi – pentru framework-ul web FastAPI
+- fastapi – pentru framework-ul web FastAPI
 
-uvicorn – pentru a rula aplicația drept un server web local
+- uvicorn – pentru a rula aplicația drept un server web local
 
-pydantic – pentru serializarea și validarea datelor
+- pydantic – pentru serializarea și validarea datelor
 
-flake – pentru lintare (verifică cât de curat este scris codul)
+- flake – pentru lintare (verifică cât de curat este scris codul)
 
 Comandă instalare:
 
