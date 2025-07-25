@@ -7,7 +7,8 @@ from functions.factorial import factorial
 
 def pow(base: float, exp: float, n_terms: int = 100) -> float:
     if base <= 0 or exp <= 0:
-        raise ValueError("Base and exponent must be positive for logarithmic exponentiation.")
+        raise ValueError("Base and exponent must be positive "
+                         "for logarithmic exponentiation.")
 
     x = exp * log_pure(base)  # b * ln(a)
 
@@ -31,10 +32,12 @@ def pow(base: float, exp: float, n_terms: int = 100) -> float:
         return partial
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
-        futures = [executor.submit(taylor_chunk, start, end) for start, end in ranges]
+        futures = [executor.submit(taylor_chunk, start, end)
+                   for start, end in ranges]
         partials = [f.result() for f in futures]
 
     return sum(partials)
+
 
 def log_pure(x: float, terms: int = 50) -> float:
     if x <= 0:

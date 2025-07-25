@@ -1,9 +1,9 @@
-from fastapi import FastAPI
 import sqlite3
 import os
 
 # Create and set the app server
 DB_PATH = "operations.db"
+
 
 # This methods sets the connection to the database of the app
 def get_db_connection():
@@ -30,7 +30,7 @@ def init_db():
         conn.close()
 
 
-#This method will insert and save the data of operations in the table
+# This method will insert and save the data of operations in the table
 def save_operation(operation: str, input_data: str, result: str):
     conn = get_db_connection()
     cursor = conn.cursor()

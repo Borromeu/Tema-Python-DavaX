@@ -1,26 +1,24 @@
 import os
 import sys
+import pytest
+from fastapi.testclient import TestClient
+from main import app  # import app and relevant modules for patching
+import database.connectionDB as db_module
+import functions.fibonacci as fib_module
+import functions.factorial as fact_module
+import functions.pow as pow_module
 
 # Add project root to path so that all modules can be imported correctly
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-import pytest
-from fastapi.testclient import TestClient
-
-# import app and relevant modules for patching
-from main import app
-import database.connectionDB as db_module
-import functions.fibonacci as fib_module
-import functions.factorial as fact_module
-import functions.pow as pow_module
-
 
 @pytest.fixture(autouse=True)
 def client(monkeypatch):
     # Stub out save_operation to avoid real database writes during tests
-    monkeypatch.setattr(db_module, "save_operation", lambda *args, **kwargs: None)
+    monkeypatch.setattr(db_module, "save_operation",
+                        lambda *args, **kwargs: None)
     return TestClient(app)
 
 
@@ -28,7 +26,8 @@ def client(monkeypatch):
 
 def test_post_fibonacci_success(monkeypatch, client):
     # Given: fibonacci(5) returns 5
-    monkeypatch.setattr(fib_module, "fibonacci", lambda n: 5 if n == 5 else None)
+    monkeypatch.setattr(fib_module, "fibonacci",
+                        lambda n: 5 if n == 5 else None)
 
     # When: Posting n=5 to /fibonacci
     resp = client.post("/fibonacci", json={"n": 5})
@@ -43,7 +42,8 @@ def test_post_fibonacci_invalid(monkeypatch, client):
     monkeypatch.setattr(
         fib_module,
         "fibonacci",
-        lambda n: (_ for _ in ()).throw(ValueError("Negative index not allowed for Fibonacci.")),
+        lambda n: (_ for _ in ()).throw(ValueError(
+            "Negative index not allowed for Fibonacci.")),
     )
 
     # When: Posting n=-1 to /fibonacci
@@ -58,14 +58,16 @@ def test_post_fibonacci_invalid(monkeypatch, client):
 
 def test_post_factorial_success(monkeypatch, client):
     # Given: factorial(5) returns 120
-    monkeypatch.setattr(fact_module, "factorial", lambda n: 120 if n == 5 else None)
+    monkeypatch.setattr(fact_module, "factorial",
+                        lambda n: 120 if n == 5 else None)
 
     # When: Posting n=5 to /factorial
     resp = client.post("/factorial", json={"n": 5})
 
     # Then: Response is 200 with correct JSON payload
     assert resp.status_code == 200
-    assert resp.json() == {"operation": "factorial", "n": 5, "result": 120}
+    assert resp.json() == {"operation": "factorial",
+                           "n": 5, "result": 120}
 
 
 def test_post_factorial_invalid(monkeypatch, client):
@@ -73,7 +75,8 @@ def test_post_factorial_invalid(monkeypatch, client):
     monkeypatch.setattr(
         fact_module,
         "factorial",
-        lambda n: (_ for _ in ()).throw(ValueError("Factorial is undefined for negative numbers.")),
+        lambda n: (_ for _ in ()).throw(ValueError(
+            "Factorial is undefined for negative numbers.")),
     )
 
     # When: Posting n=-3 to /factorial
@@ -81,14 +84,16 @@ def test_post_factorial_invalid(monkeypatch, client):
 
     # Then: Response is 400 with error detail
     assert resp.status_code == 400
-    assert resp.json()["detail"] == "Factorial is undefined for negative numbers."
+    assert (resp.json()["detail"] ==
+            "Factorial is undefined for negative numbers.")
 
 
 # ----- Power POST tests -----
 
 def test_post_pow_success(monkeypatch, client):
     # Given: pow(2,3) returns 8.0
-    monkeypatch.setattr(pow_module, "pow", lambda b, e: 8.0 if (b, e) == (2, 3) else None)
+    monkeypatch.setattr(pow_module, "pow",
+                        lambda b, e: 8.0 if (b, e) == (2, 3) else None)
 
     # When: Posting base=2, exp=3 to /pow
     resp = client.post("/pow", json={"base": 2, "exp": 3})
@@ -97,7 +102,8 @@ def test_post_pow_success(monkeypatch, client):
     # Then: Response is 200 and result matches approximately 8.0
     assert resp.status_code == 200
     assert data["result"] == pytest.approx(8.0, abs=1e-6)
-    assert data == {"operation": "pow", "base": 2, "exp": 3, "result": data["result"]}
+    assert data == {"operation": "pow",
+                    "base": 2, "exp": 3, "result": data["result"]}
 
 
 def test_post_pow_exception(monkeypatch, client):
@@ -105,7 +111,9 @@ def test_post_pow_exception(monkeypatch, client):
     monkeypatch.setattr(
         pow_module,
         "pow",
-        lambda b, e: (_ for _ in ()).throw(Exception("Base and exponent must be positive for logarithmic exponentiation.")),
+        lambda b, e: (_ for _ in ())
+        .throw(Exception("Base and exponent "
+                         "must be positive for logarithmic exponentiation.")),
     )
 
     # When: Posting an invalid request to /pow
@@ -113,14 +121,17 @@ def test_post_pow_exception(monkeypatch, client):
 
     # Then: Response is 400 with correct detail message
     assert resp.status_code == 400
-    assert resp.json()["detail"] == "Base and exponent must be positive for logarithmic exponentiation."
+    assert (resp.json()["detail"] ==
+            "Base and exponent "
+            "must be positive for logarithmic exponentiation.")
 
 
 # ----- Power GET tests -----
 
 def test_get_pow_query_exact(monkeypatch, client):
     # Given: pow(2,4) returns 16.0
-    monkeypatch.setattr(pow_module, "pow", lambda b, e: 16.0 if (b, e) == (2, 4) else None)
+    monkeypatch.setattr(pow_module, "pow",
+                        lambda b, e: 16.0 if (b, e) == (2, 4) else None)
 
     # When: Querying /pow?base=2&exp=4
     resp = client.get("/pow?base=2&exp=4")
@@ -152,7 +163,8 @@ def test_get_pow_query_fractional(monkeypatch, client):
 
 def test_get_fibonacci_query_success(monkeypatch, client):
     # Given: fibonacci(7) returns 13
-    monkeypatch.setattr(fib_module, "fibonacci", lambda n: 13 if n == 7 else None)
+    monkeypatch.setattr(fib_module, "fibonacci",
+                        lambda n: 13 if n == 7 else None)
 
     # When: GET /fibonacci?n=7
     resp = client.get("/fibonacci?n=7")
@@ -161,11 +173,13 @@ def test_get_fibonacci_query_success(monkeypatch, client):
     assert resp.status_code == 200
     assert resp.json() == {"operation": "fibonacci", "n": 7, "result": 13}
 
+
 # ----- Factorial GET tests -----
 
 def test_get_factorial_query_success(monkeypatch, client):
     # Given: factorial(6) returns 720
-    monkeypatch.setattr(fact_module, "factorial", lambda n: 720 if n == 6 else None)
+    monkeypatch.setattr(fact_module, "factorial",
+                        lambda n: 720 if n == 6 else None)
 
     # When: GET /factorial?n=6
     resp = client.get("/factorial?n=6")
