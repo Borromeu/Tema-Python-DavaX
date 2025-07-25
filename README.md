@@ -13,7 +13,7 @@
 - pydantic	Data validation & serialization
 
 
-flake8	(Optional) Linting / clean code checker
+- flake8	(Optional) Linting / clean code checker
 
 -pip install fastapi uvicorn pydantic flake8
 
@@ -58,7 +58,7 @@ bash
 
 pip install fastapi uvicorn pydantic flake8 pytest httpx
 
-##🧠 Pasul 3 – Rularea scripturilor în Python
+## 🧠 Pasul 3 – Rularea scripturilor în Python
 ###▶️ Pasul 3.1 – Rularea scriptului main.py 
 Scop:
 Lansează execuția aplicației, creează și deschide serverul web local, și definește rutele pentru operații și istoricul acestora.
