@@ -26,23 +26,22 @@ def post_fibonacci(data: FibonacciInput):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-
 # Post method for inserting and saving a factorial operation in database
 @router.post("/factorial")
 def post_factorial(data: FactorialInput):
-  try:
-      result = factorial(data.n)
-      save_operation("factorial", f"n={data.n}", str(result))
-      return {
-          "operation": "factorial",
-          "n": data.n,
-          "result": result
-      }
-  except ValueError as e:
-      raise HTTPException(status_code=400, detail=str(e))
+    try:
+        result = factorial(data.n)
+        save_operation("factorial", f"n={data.n}", str(result))
+        return {
+            "operation": "factorial",
+            "n": data.n,
+            "result": result
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-#Post method for inserting and saving a power operation in database
+# Post method for inserting and saving a power operation in database
 @router.post("/pow")
 def post_power(data: PowerInput):
     try:
@@ -66,7 +65,6 @@ def compute_power(base: float = Query(...), exp: float = Query(...)):
     return {"operation": "pow", "base": base, "exp": exp, "result": result}
 
 
-
 # This method will get and display a row that used the fibonacci operation
 @router.get("/fibonacci")
 def compute_fibonacci(n: int = Query(..., ge=0)):
@@ -76,7 +74,6 @@ def compute_fibonacci(n: int = Query(..., ge=0)):
         raise HTTPException(status_code=400, detail=str(e))
     save_operation("fibonacci", f"n={n}", str(result))
     return {"operation": "fibonacci", "n": n, "result": result}
-
 
 
 # This method will get and display a row that used the fibonacci operation
@@ -90,14 +87,14 @@ def compute_factorial(n: int = Query(..., ge=0)):
     return {"operation": "factorial", "n": n, "result": result}
 
 
-
 # This method is used to display a historian of all operations that have been
 # executed and saved
 @router.get("/history")
 def get_history():
     conn = get_db_connection()
     cursor = conn.cursor()
-    rows = cursor.execute("SELECT * FROM operations ORDER BY timestamp DESC").fetchall()
+    rows = cursor.execute("SELECT * FROM operations "
+                          "ORDER BY timestamp DESC").fetchall()
     conn.close()
     return [dict(row) for row in rows]
 
@@ -107,27 +104,32 @@ def get_fibonacci_history():
     conn = get_db_connection()
     cursor = conn.cursor()
     rows = cursor.execute(
-        "SELECT * FROM operations WHERE operation = 'fibonacci' ORDER BY timestamp DESC"
+        "SELECT * FROM operations WHERE operation = 'fibonacci' "
+        "ORDER BY timestamp DESC"
     ).fetchall()
     conn.close()
     return [dict(row) for row in rows]
+
 
 @router.get("/history/factorial")
 def get_factorial_history():
     conn = get_db_connection()
     cursor = conn.cursor()
     rows = cursor.execute(
-        "SELECT * FROM operations WHERE operation = 'factorial' ORDER BY timestamp DESC"
+        "SELECT * FROM operations WHERE operation = 'factorial' "
+        "ORDER BY timestamp DESC"
     ).fetchall()
     conn.close()
     return [dict(row) for row in rows]
 
+
 @router.get("/history/pow")
-def get_fibonacci_history():
+def get_pow_history():
     conn = get_db_connection()
     cursor = conn.cursor()
     rows = cursor.execute(
-        "SELECT * FROM operations WHERE operation = 'pow' ORDER BY timestamp DESC"
+        "SELECT * FROM operations WHERE operation = 'pow' "
+        "ORDER BY timestamp DESC"
     ).fetchall()
     conn.close()
     return [dict(row) for row in rows]
