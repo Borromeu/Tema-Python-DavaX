@@ -171,3 +171,8 @@ http://localhost:8080/history/factorial
 
 #### Istoric Power:
 http://localhost:8080/history/pow
+
+## Membrii echipei:
+- ### Andrei Alexandru Gheorghe
+- ### Adelin Andrei Fulop
+- ### Alexandru Alin Potângă
